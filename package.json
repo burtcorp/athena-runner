@@ -1,0 +1,15 @@
+{
+  "name": "athena-runner",
+  "version": "1.0.0",
+  "description": "Runs Athena queries with AWS Lambda and Step Functions",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/burtcorp/athena-runner.git"
+  },
+  "main": "index.js",
+  "author": "Theo Hultberg <theo@burtcorp.com>",
+  "license": "BSD-3-Clause",
+  "devDependencies": {
+    "yamljs": "^0.3.0"
+  }
+}

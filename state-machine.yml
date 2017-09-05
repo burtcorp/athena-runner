@@ -1,0 +1,34 @@
+---
+Comment: This state machine submits a query to Athena and waits for it to complete
+StartAt: start_query
+States:
+  start_query:
+    Type: Task
+    Resource: arn:aws:lambda:us-east-1:456064453472:function:athena-runner-start-query
+    Next: wait_next
+  wait_next:
+    Type: Wait
+    SecondsPath: '$.waitTime'
+    Next: poll_status
+  poll_status:
+    Type: Task
+    Resource: arn:aws:lambda:us-east-1:456064453472:function:athena-runner-poll-status
+    Next: check_complete
+  check_complete:
+    Type: Choice
+    Default: wait_next
+    Choices:
+      - Variable: '$.status'
+        StringEquals: FAILED
+        Next: query_failed
+      - Variable: '$.status'
+        StringEquals: SUCCEEDED
+        Next: get_results
+  query_failed:
+    Type: Fail
+    Cause: "Athena execution failed"
+    Error: "Athena execution failed"
+  get_results:
+    Type: Task
+    Resource: arn:aws:lambda:us-east-1:456064453472:function:athena-runner-get-results
+    End: true
