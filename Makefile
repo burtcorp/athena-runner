@@ -27,6 +27,10 @@ update-role: policies = $(filter-out config/policies/TrustRelationship.json, $(w
 update-role: config/role-arn
 	$(foreach policy,$(policies),$(call put_role_policy,$(policy);))
 
+delete-role:
+	aws iam delete-role \
+		--role-name "$(ROLE_NAME)"
+
 role_arn = $(shell cat config/role-arn)
 create_function = aws lambda create-function \
 	--region "$(AWS_REGION)" \
@@ -52,6 +56,15 @@ update-functions: dist/athena-runner.zip
 	$(call update_function_code,start-query)
 	$(call update_function_code,poll-status)
 	$(call update_function_code,get-results)
+
+delete_function = aws lambda delete-function \
+	--region "$(AWS_REGION)" \
+	--function-name "$(STATE_MACHINE_NAME)-$(1)" \
+
+delete-functions:
+	$(call delete_function,start-query)
+	$(call delete_function,poll-status)
+	$(call delete_function,get-results)
 
 create-state-machine: config/state-machine-arn
 

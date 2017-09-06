@@ -82,6 +82,14 @@ $ aws stepfunctions start-execution --state-machine-arn $(cat config/state-machi
 
 Capture the execution ARN and follow the status with `aws stepfunctions describe-execution --execution-arn …`.
 
+## Cleaning up
+
+You can delete all resources created by the setup with the following command:
+
+```shell
+$ make delete-state-machine delete-functions delete-role
+```
+
 # Copyright
 
 © 2017 Burt AB, see LICENSE.txt (BSD 3-Clause)
