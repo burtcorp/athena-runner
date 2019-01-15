@@ -23,13 +23,19 @@ put_role_policy = aws iam put-role-policy \
 	--policy-name $(notdir $(basename $(1))) \
 	--policy-document file://$(1)
 
-update-role: policies = $(filter-out config/policies/TrustRelationship.json, $(wildcard config/policies/*.json))
+policies = $(filter-out config/policies/TrustRelationship.json, $(wildcard config/policies/*.json))
+
 update-role: config/role-arn
 	$(foreach policy,$(policies),$(call put_role_policy,$(policy);))
 
+delete_role_policy = aws iam delete-role-policy \
+		--role-name "$(ROLE_NAME)" \
+		--policy-name $(notdir $(basename $(1)))
+
 delete-role:
-	aws iam delete-role \
-		--role-name "$(ROLE_NAME)"
+		$(foreach policy, $(policies), $(call delete_role_policy,$(policy));)
+		aws iam delete-role --role-name "$(ROLE_NAME)"
+		$(shell rm config/role-arn)
 
 role_arn = $(shell cat config/role-arn)
 create_function = aws lambda create-function \
